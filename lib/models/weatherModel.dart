@@ -1,3 +1,6 @@
+// ignore_for_file: file_names
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class WeatherModel {
@@ -16,7 +19,9 @@ class WeatherModel {
 
   factory WeatherModel.fromjson(dynamic data) {
     var jsondata = data['forecast']['forecastday'][0]['day'];
-    print(jsondata);
+    if (kDebugMode) {
+      print(jsondata);
+    }
     // date = data['location']['localtime'];
     // condition = jsondata['condition']['text'];
     // ;

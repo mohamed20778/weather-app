@@ -1,21 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:weatherapp/Cubits/get_weather_cubit/get_weather_cubit.dart';
+import 'package:weatherapp/Cubits/get_weather_states.dart';
 import 'package:weatherapp/models/weatherModel.dart';
-import 'package:weatherapp/provider/weather_provider.dart';
-import 'package:weatherapp/searchCity.dart';
+import 'package:weatherapp/search_city.dart';
 
-class searchPage extends StatefulWidget {
-  const searchPage({super.key});
-
-  @override
-  State<searchPage> createState() => _searchPageState();
-}
-
-class _searchPageState extends State<searchPage> {
+class SearchPage extends StatelessWidget {
   WeatherModel? weatherData;
+
   @override
   Widget build(BuildContext context) {
-    weatherData = Provider.of<WeatherProvider>(context).weatherData;
     return Scaffold(
       appBar: AppBar(
         title: const Center(child: Text('Weather')),
@@ -25,21 +19,21 @@ class _searchPageState extends State<searchPage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const searchCity()));
+                        builder: (context) => const SearchCity()));
               },
               icon: const Icon(Icons.search))
         ],
       ),
-      body: Provider.of<WeatherProvider>(context).weatherData == null
-          ? const Padding(
-              padding: EdgeInsets.all(21.0),
-              child: Center(
-                  child: Text(
-                'there is no weather start search now',
-                style: TextStyle(fontSize: 25),
-              )),
-            )
-          : Center(
+      body: BlocBuilder<GetWeatherCubit, WeatherState>(
+        builder: (context, state) {
+          if (state is WeatherLoadingState) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is WeatherSuccessState) {
+            weatherData =
+                BlocProvider.of<GetWeatherCubit>(context).weathermodel;
+            return Center(
               child: Container(
                 decoration: BoxDecoration(
                     gradient: LinearGradient(colors: [
@@ -54,7 +48,7 @@ class _searchPageState extends State<searchPage> {
                       flex: 3,
                     ),
                     Text(
-                      Provider.of<WeatherProvider>(context).cityName.toString(),
+                      BlocProvider.of<GetWeatherCubit>(context).cityName!,
                       style: const TextStyle(
                         fontSize: 40,
                         fontWeight: FontWeight.bold,
@@ -108,7 +102,33 @@ class _searchPageState extends State<searchPage> {
                   ],
                 ),
               ),
-            ),
+            );
+          } else if (state is WeatherFailureState) {
+            return const Center(
+              child: Text('SomeThing Went Wrong Please Trt Again'),
+            );
+          } else {
+            return const Padding(
+              padding: EdgeInsets.all(21.0),
+              child: Center(
+                  child: Text(
+                'there is no weather start search now',
+                style: TextStyle(fontSize: 25),
+              )),
+            );
+          }
+        },
+      ),
+      // body: true
+      //     ? const Padding(
+      //         padding: EdgeInsets.all(21.0),
+      //         child: Center(
+      //             child: Text(
+      //           'there is no weather start search now',
+      //           style: TextStyle(fontSize: 25),
+      //         )),
+      //       )
+      //     :
     );
   }
 }

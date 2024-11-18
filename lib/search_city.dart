@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 import 'package:weatherapp/Cubits/get_weather_cubit/get_weather_cubit.dart';
-import 'package:weatherapp/models/weatherModel.dart';
-import 'package:weatherapp/provider/weather_provider.dart';
-import 'package:weatherapp/service/weather_service.dart';
 
-class searchCity extends StatefulWidget {
-  const searchCity({super.key});
+class SearchCity extends StatefulWidget {
+  const SearchCity({super.key});
 
   @override
-  State<searchCity> createState() => _searchCityState();
+  State<SearchCity> createState() => _SearchCityState();
 }
 
-class _searchCityState extends State<searchCity> {
+class _SearchCityState extends State<SearchCity> {
   String? cityName;
   @override
   Widget build(BuildContext context) {
@@ -36,6 +32,8 @@ class _searchCityState extends State<searchCity> {
                     onTap: () async {
                       BlocProvider.of<GetWeatherCubit>(context)
                           .getWeather(cityName: cityName!);
+                      BlocProvider.of<GetWeatherCubit>(context).cityName =
+                          cityName;
                       Navigator.pop(context);
                     },
                     child: const Icon(Icons.search)),
